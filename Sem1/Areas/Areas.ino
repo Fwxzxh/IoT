@@ -1,7 +1,7 @@
 // Programa que obtiene las areas de superficies aleatorias
 
-#define LIM_IZ_MIN 0
-#define LIM_DER_MAX 100
+#define LIM_IZ_MIN 50
+#define LIM_DER_MAX 150
 #define LIM_AREAS 100
 
 int gLimIzq;
@@ -24,20 +24,31 @@ double f(double x) {
   return y;
 }
 
-double calcula(double limIzq, double limDer, int numPuntos){
-  double h= (limDer-limIzq)/numPuntos;
-  double area= 0;
-  for (int i=1; i<numPuntos-2; i++){
-      area+= f(limIzq+ancho*i);
-  }
-  area+= h/2*(area+f(limIzq)+f(limDer))
-  return area;
+double metodoTrapecio(double limIzq, double limDer){
+    double ancho= limDer-limIzq;
+    double area= ancho*(f(limIzq)+f(limDer))/2.0;
+    return area;
+}
+
+double metodoTrapecioCompuesto(double limIzq, double limDer, int numPuntos){
+    double paso= (limDer-limIzq)/numPuntos;
+    double area= 0;
+    for (int i=0; i<numPuntos-1; i++){
+        area+= metodoTrapecio(limIzq+paso*i,limIzq+paso*(i+1));
+    }
+    return area;
 }
 
 void loop() {
   genera();
-  Serial.println("Lim izquierdo " + limIzq + "Lim Derecho " + limDer + " Numero de areas " + gNumP);
-  res = calcula(gLimIzq, gLimDer, gNumP);
-  Serial.println("Area total: " + res);
+  Serial.print(" Lim izquierdo ");
+  Serial.print(gLimIzq);
+  Serial.print(" Lim Derecho ");
+  Serial.print(gLimDer);
+  Serial.print(" Numero de areas ");
+  Serial.println(gNumP);
+  double res = metodoTrapecioCompuesto(gLimIzq, gLimDer, gNumP);
+  Serial.print(" Area total ");
+  Serial.println(res);
   delay(4000);
 }
